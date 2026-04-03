@@ -1,0 +1,62 @@
+/* Blob 形变动画 */
+@keyframes morphBlob {
+  0% { border-radius: 62% 38% 54% 46% / 48% 52% 48% 52%; }
+  25% { border-radius: 42% 58% 38% 62% / 55% 45% 58% 42%; }
+  50% { border-radius: 54% 46% 66% 34% / 42% 58% 44% 56%; }
+  75% { border-radius: 38% 62% 48% 52% / 60% 40% 52% 48%; }
+  100% { border-radius: 58% 42% 40% 60% / 46% 54% 50% 50%; }
+}
+
+/* 页面入场动画 */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 脉冲动画 */
+@keyframes pulseSoft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* 旋转动画 */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 动画类 */
+.animate-morph {
+  animation: morphBlob var(--duration-morph) ease-in-out infinite alternate;
+}
+
+.animate-fade-up {
+  animation: fadeSlideUp var(--duration-enter) var(--easing-organic) both;
+}
+
+.animate-pulse {
+  animation: pulseSoft 2s ease-in-out infinite;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* 卡片列表错开入场 */
+.card-grid .org-card:nth-child(1) { animation: fadeSlideUp 0.6s var(--easing-organic) 0.0s both; }
+.card-grid .org-card:nth-child(2) { animation: fadeSlideUp 0.6s var(--easing-organic) 0.1s both; }
+.card-grid .org-card:nth-child(3) { animation: fadeSlideUp 0.6s var(--easing-organic) 0.2s both; }
+.card-grid .org-card:nth-child(4) { animation: fadeSlideUp 0.6s var(--easing-organic) 0.3s both; }
+.card-grid .org-card:nth-child(5) { animation: fadeSlideUp 0.6s var(--easing-organic) 0.4s both; }
+.card-grid .org-card:nth-child(6) { animation: fadeSlideUp 0.6s var(--easing-organic) 0.5s both; }
+
+/* 减少动画偏好 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings
-from typing import Literal
+import os
 
 
 class Settings(BaseSettings):
@@ -11,7 +11,6 @@ class Settings(BaseSettings):
 
     prometheus_url: str = "http://localhost:9090"
 
-    llm_provider: Literal["openai", "doubao", "qwen"] = "openai"
     openai_api_key: str = ""
     openai_base_url: str = "https://api.openai.com/v1"
     openai_model: str = "gpt-4o"
@@ -32,3 +31,14 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+# 打印配置用于调试
+print("=" * 60)
+print("Configuration:")
+print(f"  OPENAI_API_KEY: {'set' if settings.openai_api_key else 'not set'}")
+print(f"  OPENAI_BASE_URL: {settings.openai_base_url}")
+print(f"  OPENAI_MODEL: {settings.openai_model}")
+print(f"  Environment variables from os.environ:")
+print(f"    OPENAI_API_KEY: {'set' if os.environ.get('OPENAI_API_KEY') else 'not set'}")
+print(f"    OPENAI_BASE_URL: {os.environ.get('OPENAI_BASE_URL', 'not set')}")
+print("=" * 60)

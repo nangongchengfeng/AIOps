@@ -2,8 +2,9 @@ import json
 import logging
 from typing import Dict, Any, Optional
 from datetime import datetime
+import asyncio
 
-from langchain_openai import ChatOpenAI
+from openai import AsyncOpenAI
 
 from app.core.config import settings
 from app.models.schemas import AnalysisResult
@@ -44,21 +45,25 @@ PROMPT_TEMPLATE = """你是一个经验丰富的 SRE 专家。请分析以下告
 
 class LLMService:
     def __init__(self):
-        self._llm: Optional[ChatOpenAI] = None
+        self._client: Optional[AsyncOpenAI] = None
 
     @property
-    def llm(self) -> ChatOpenAI:
-        if self._llm is None:
-            if settings.llm_provider == "openai":
-                self._llm = ChatOpenAI(
-                    model=settings.openai_model,
-                    api_key=settings.openai_api_key,
-                    base_url=settings.openai_base_url,
-                    temperature=0.3,
-                )
-            else:
-                raise ValueError(f"Unsupported LLM provider: {settings.llm_provider}")
-        return self._llm
+    def client(self) -> AsyncOpenAI:
+        if self._client is None:
+            logger.info("=" * 60)
+            logger.info("Initializing Async OpenAI client...")
+            logger.info(f"  Model: {settings.openai_model}")
+            logger.info(f"  Base URL: {settings.openai_base_url}")
+            logger.info(f"  API Key: {'set' if settings.openai_api_key else 'not set'}")
+            if settings.openai_api_key:
+                logger.info(f"  API Key starts with: {settings.openai_api_key[:20]}...")
+            logger.info("=" * 60)
+
+            self._client = AsyncOpenAI(
+                api_key=settings.openai_api_key,
+                base_url=settings.openai_base_url,
+            )
+        return self._client
 
     def _format_metrics_summary(self, metrics_data: Dict[str, Any]) -> str:
         if not metrics_data or not metrics_data.get("metrics"):
@@ -77,7 +82,7 @@ class LLMService:
 
         return "\n".join(summary_lines) if summary_lines else "暂无相关指标数据"
 
-    def analyze_root_cause(
+    async def analyze_root_cause(
         self,
         alert_data: Dict[str, Any],
         metrics_data: Dict[str, Any],
@@ -96,14 +101,23 @@ class LLMService:
 
         logger.info(f"Invoking LLM for alert: {alert_data.get('alert_name')}")
 
-        messages = [
-            ("system", "你是一个专业的 SRE 专家，擅长告警根因分析。请严格按照 JSON 格式输出。"),
-            ("user", prompt),
-        ]
-
         try:
-            response = self.llm.invoke(messages)
-            content = response.content.strip()
+            logger.info(f"Sending request to: {settings.openai_base_url}/chat/completions")
+
+            response = await self.client.chat.completions.create(
+                model=settings.openai_model,
+                messages=[
+                    {"role": "system", "content": "你是一个专业的 SRE 专家，擅长告警根因分析。请严格按照 JSON 格式输出。"},
+                    {"role": "user", "content": prompt},
+                ],
+                temperature=0.3,
+            )
+
+            content = response.choices[0].message.content
+            if not content:
+                raise ValueError("Empty response from LLM")
+
+            content = content.strip()
 
             if content.startswith("```json"):
                 content = content[7:]

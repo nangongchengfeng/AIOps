@@ -3,7 +3,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.database import get_db
+from app.core.database import get_db, AsyncSessionLocal
 from app.core.config import settings
 from app.models.schemas import (
     AlertManagerWebhook,
@@ -13,7 +13,7 @@ from app.models.schemas import (
     Analysis,
 )
 from app.services.alert_processor import get_alert_processor
-from app.services.alert_analyzer import get_alert_analyzer
+from app.services.alert_analyzer import get_alert_analyzer, AlertAnalyzer
 from app.db.crud import AlertCRUD, AnalysisCRUD
 
 logger = logging.getLogger(__name__)
@@ -21,12 +21,28 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/alerts", tags=["alerts"])
 
 
-async def _background_analyze(alert_id: int, db: AsyncSession):
+async def _background_analyze(alert_id: int):
+    """后台分析任务 - 使用独立的数据库 session"""
+    db = AsyncSessionLocal()
     try:
         analyzer = get_alert_analyzer(db)
         await analyzer.analyze_alert(alert_id)
     except Exception as e:
         logger.error(f"Background analysis failed for alert {alert_id}: {e}")
+    finally:
+        await db.close()
+
+
+async def _background_process_analysis(analysis_id: int):
+    """后台处理分析任务 - 使用独立的数据库 session"""
+    db = AsyncSessionLocal()
+    try:
+        analyzer = get_alert_analyzer(db)
+        await analyzer.process_analysis_background(analysis_id)
+    except Exception as e:
+        logger.error(f"Background analysis failed for analysis {analysis_id}: {e}")
+    finally:
+        await db.close()
 
 
 @router.post("/webhook", response_model=WebhookResponse)
@@ -40,7 +56,7 @@ async def receive_webhook(
 
     if settings.auto_analyze_new_alerts and result.to_analyze:
         for alert_id in result.to_analyze:
-            background_tasks.add_task(_background_analyze, alert_id, db)
+            background_tasks.add_task(_background_analyze, alert_id)
 
     return WebhookResponse(
         status="ok",
@@ -86,10 +102,20 @@ async def get_alert_by_fingerprint(fingerprint: str, db: AsyncSession = Depends(
 
 
 @router.post("/{alert_id}/analyze", response_model=Analysis)
-async def analyze_alert(alert_id: int, db: AsyncSession = Depends(get_db)):
+async def analyze_alert(
+    alert_id: int,
+    background_tasks: BackgroundTasks,
+    db: AsyncSession = Depends(get_db),
+):
+    """立即返回 pending 状态，后台异步执行分析"""
     analyzer = get_alert_analyzer(db)
     try:
-        return await analyzer.analyze_alert(alert_id)
+        # 1. 立即创建 pending 状态的分析记录
+        analysis = await analyzer.create_pending_analysis(alert_id=alert_id)
+        # 2. 后台异步执行实际分析（使用独立的 db session）
+        background_tasks.add_task(_background_process_analysis, analysis.id)
+        # 3. 立即返回 pending 状态给前端
+        return analysis
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
