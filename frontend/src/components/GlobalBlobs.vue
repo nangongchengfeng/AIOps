@@ -31,7 +31,7 @@
   height: 520px;
   top: -200px;
   right: -100px;
-  background: radial-gradient(circle, rgba(155, 127, 232, 0.18), transparent 70%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--color-primary) 15%, transparent), transparent 70%);
   animation-duration: 9s;
 }
 
@@ -40,7 +40,7 @@
   height: 380px;
   bottom: 10%;
   left: -80px;
-  background: radial-gradient(circle, rgba(126, 206, 196, 0.15), transparent 70%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--color-teal) 12%, transparent), transparent 70%);
   animation-duration: 7s;
   animation-delay: -3s;
 }
@@ -50,7 +50,7 @@
   height: 280px;
   top: 50%;
   left: 40%;
-  background: radial-gradient(circle, rgba(232, 164, 184, 0.12), transparent 70%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--color-soft) 10%, transparent), transparent 70%);
   animation-duration: 11s;
   animation-delay: -5s;
 }

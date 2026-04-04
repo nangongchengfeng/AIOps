@@ -1,6 +1,6 @@
 import logging
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db, AsyncSessionLocal
@@ -83,19 +83,44 @@ async def list_alerts(
     )
 
 
-@router.get("/{alert_id}", response_model=Alert)
-async def get_alert(alert_id: int, db: AsyncSession = Depends(get_db)):
+@router.get("/trend")
+async def get_alert_trend(
+    days: int = Query(7, ge=1, le=90, description="统计天数，1-90天"),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    获取告警趋势统计
+
+    - **days**: 统计天数，默认7天
+    """
     crud = AlertCRUD()
-    alert = await crud.get_by_id(db, alert_id)
-    if not alert:
-        raise HTTPException(status_code=404, detail="Alert not found")
-    return alert
+    trend_items = await crud.get_trend(db, days=days)
+    total = sum(item["count"] for item in trend_items)
+    return {
+        "items": trend_items,
+        "total": total
+    }
 
 
 @router.get("/fingerprint/{fingerprint}", response_model=Alert)
 async def get_alert_by_fingerprint(fingerprint: str, db: AsyncSession = Depends(get_db)):
     crud = AlertCRUD()
     alert = await crud.get_by_fingerprint(db, fingerprint)
+    if not alert:
+        raise HTTPException(status_code=404, detail="Alert not found")
+    return alert
+
+
+@router.get("/analyses/latest", response_model=list[Analysis])
+async def get_latest_analyses(limit: int = 10, db: AsyncSession = Depends(get_db)):
+    crud = AnalysisCRUD()
+    return await crud.get_latest(db, limit=limit)
+
+
+@router.get("/{alert_id}", response_model=Alert)
+async def get_alert(alert_id: int, db: AsyncSession = Depends(get_db)):
+    crud = AlertCRUD()
+    alert = await crud.get_by_id(db, alert_id)
     if not alert:
         raise HTTPException(status_code=404, detail="Alert not found")
     return alert
@@ -124,9 +149,3 @@ async def analyze_alert(
 async def get_alert_analyses(alert_id: int, db: AsyncSession = Depends(get_db)):
     crud = AnalysisCRUD()
     return await crud.get_by_alert_id(db, alert_id)
-
-
-@router.get("/analyses/latest", response_model=list[Analysis])
-async def get_latest_analyses(limit: int = 10, db: AsyncSession = Depends(get_db)):
-    crud = AnalysisCRUD()
-    return await crud.get_latest(db, limit=limit)

@@ -29,27 +29,31 @@ const badgeClass = computed(() => {
   font-size: var(--text-xs);
   font-weight: 600;
   border-radius: 50px 28px 44px 24px;
-  background: rgba(155, 127, 232, 0.15);
+  background: color-mix(in srgb, var(--color-primary) 15%, transparent);
   color: var(--color-primary-dark);
 }
 
 .badge-success {
-  background: rgba(142, 203, 168, 0.15);
-  color: #4a9464;
+  background: color-mix(in srgb, var(--color-success) 15%, transparent);
+  color: var(--color-success);
+  filter: brightness(0.8);
 }
 
 .badge-warning {
-  background: rgba(232, 204, 138, 0.2);
-  color: #9a7020;
+  background: color-mix(in srgb, var(--color-warning) 20%, transparent);
+  color: var(--color-warning);
+  filter: brightness(0.75);
 }
 
 .badge-error {
-  background: rgba(232, 150, 140, 0.15);
-  color: #9c3a30;
+  background: color-mix(in srgb, var(--color-error) 15%, transparent);
+  color: var(--color-error);
+  filter: brightness(0.85);
 }
 
 .badge-info {
-  background: rgba(138, 180, 232, 0.15);
-  color: #2a5e9a;
+  background: color-mix(in srgb, var(--color-info) 15%, transparent);
+  color: var(--color-info);
+  filter: brightness(0.75);
 }
 </style>

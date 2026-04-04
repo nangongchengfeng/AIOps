@@ -130,3 +130,15 @@ class ReadyResponse(BaseModel):
     status: str
     database: bool
     prometheus: Optional[bool] = None
+
+
+class AlertTrendItem(BaseModel):
+    """告警趋势数据项"""
+    date: str
+    count: int
+
+
+class AlertTrendResponse(BaseModel):
+    """告警趋势响应"""
+    items: List[AlertTrendItem]
+    total: int

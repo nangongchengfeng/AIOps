@@ -43,7 +43,7 @@
 
           <div v-if="analysis.status === 'completed'" class="analysis-content">
             <div v-if="analysis.root_cause" class="content-section">
-              <div class="section-icon" style="background: linear-gradient(135deg, #9b7fe8, #c4aeef);">
+              <div class="section-icon" style="background: linear-gradient(135deg, #5b9bd5, #8ecae6);">
                 <Search :size="18" />
               </div>
               <div class="section-content">
@@ -219,7 +219,7 @@ onUnmounted(() => {
 .spinner {
   width: 32px;
   height: 32px;
-  border: 3px solid rgba(155, 127, 232, 0.2);
+  border: 3px solid rgba(91, 155, 213, 0.2);
   border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
@@ -237,16 +237,16 @@ onUnmounted(() => {
 }
 
 .analysis-card {
-  background: rgba(155, 127, 232, 0.04);
+  background: rgba(91, 155, 213, 0.04);
   border-radius: 28px 18px 24px 20px;
   padding: 20px;
-  border: 1px solid rgba(155, 127, 232, 0.08);
+  border: 1px solid rgba(91, 155, 213, 0.08);
   transition: all var(--duration-hover) var(--easing-organic);
 }
 
 .analysis-card:hover {
-  background: rgba(155, 127, 232, 0.08);
-  border-color: rgba(155, 127, 232, 0.15);
+  background: rgba(91, 155, 213, 0.08);
+  border-color: rgba(91, 155, 213, 0.15);
   transform: translateY(-2px);
 }
 
@@ -280,7 +280,7 @@ onUnmounted(() => {
 .analysis-version {
   font-size: 12px;
   color: var(--text-muted);
-  background: rgba(155, 127, 232, 0.1);
+  background: rgba(91, 155, 213, 0.1);
   padding: 2px 8px;
   border-radius: 8px 4px 6px 4px;
   font-weight: 600;
@@ -296,7 +296,7 @@ onUnmounted(() => {
   font-size: 11px;
   font-weight: 700;
   color: var(--color-primary);
-  background: rgba(155, 127, 232, 0.15);
+  background: rgba(91, 155, 213, 0.15);
   padding: 3px 10px;
   border-radius: 50px 28px 44px 24px;
 }
@@ -359,7 +359,7 @@ onUnmounted(() => {
   align-items: center;
   gap: 12px;
   padding: 10px 14px;
-  background: rgba(155, 127, 232, 0.06);
+  background: rgba(91, 155, 213, 0.06);
   border-radius: 14px 8px 12px 10px;
 }
 
@@ -374,7 +374,7 @@ onUnmounted(() => {
 .bar-container {
   flex: 1;
   height: 8px;
-  background: rgba(155, 127, 232, 0.15);
+  background: rgba(91, 155, 213, 0.15);
   border-radius: 4px;
   overflow: hidden;
 }
@@ -419,7 +419,7 @@ onUnmounted(() => {
   gap: 16px;
   margin-top: 16px;
   padding-top: 16px;
-  border-top: 1px solid rgba(155, 127, 232, 0.1);
+  border-top: 1px solid rgba(91, 155, 213, 0.1);
 }
 
 .analysis-time {
@@ -433,7 +433,7 @@ onUnmounted(() => {
 .model-used {
   font-size: 12px;
   color: var(--text-muted);
-  background: rgba(155, 127, 232, 0.08);
+  background: rgba(91, 155, 213, 0.08);
   padding: 4px 10px;
   border-radius: 10px 6px 8px 4px;
 }

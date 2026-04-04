@@ -127,12 +127,14 @@
               >
                 <div class="analysis-header">
                   <span class="analysis-version">v{{ analysis.version }}</span>
-                  <Badge :type="getAnalysisBadgeType(analysis.status)">
-                    {{ getAnalysisStatusText(analysis.status) }}
-                  </Badge>
+                  <div class="analysis-badges">
+                    <Badge v-if="analysis.is_latest" type="info" class="latest-inline">最新</Badge>
+                    <Badge :type="getAnalysisBadgeType(analysis.status)">
+                      {{ getAnalysisStatusText(analysis.status) }}
+                    </Badge>
+                  </div>
                 </div>
                 <div class="analysis-time">{{ formatTime(analysis.created_at) }}</div>
-                <div v-if="analysis.is_latest" class="latest-badge">最新</div>
               </div>
             </div>
           </OrgCard>
@@ -402,7 +404,7 @@ onUnmounted(() => {
 }
 
 .back-btn:hover {
-  background: rgba(155, 127, 232, 0.1);
+  background: rgba(91, 155, 213, 0.1);
   color: var(--color-primary);
 }
 
@@ -438,7 +440,7 @@ onUnmounted(() => {
 .spinner {
   width: 32px;
   height: 32px;
-  border: 3px solid rgba(155, 127, 232, 0.2);
+  border: 3px solid rgba(91, 155, 213, 0.2);
   border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
@@ -528,7 +530,7 @@ onUnmounted(() => {
 .section {
   margin-top: 24px;
   padding-top: 20px;
-  border-top: 1px solid rgba(155, 127, 232, 0.1);
+  border-top: 1px solid rgba(91, 155, 213, 0.1);
 }
 
 .section-title {
@@ -564,7 +566,7 @@ onUnmounted(() => {
   align-items: center;
   gap: 4px;
   padding: 4px 10px;
-  background: rgba(155, 127, 232, 0.1);
+  background: rgba(91, 155, 213, 0.1);
   border-radius: 12px 6px 10px 8px;
   font-size: 12px;
 }
@@ -590,7 +592,7 @@ onUnmounted(() => {
   flex-direction: column;
   gap: 4px;
   padding: 10px 14px;
-  background: rgba(155, 127, 232, 0.05);
+  background: rgba(91, 155, 213, 0.05);
   border-radius: 12px 8px 10px 6px;
 }
 
@@ -637,7 +639,7 @@ onUnmounted(() => {
 
 .analysis-item {
   padding: 12px 14px;
-  background: rgba(155, 127, 232, 0.05);
+  background: rgba(91, 155, 213, 0.05);
   border-radius: 14px 8px 12px 10px;
   cursor: pointer;
   transition: all var(--duration-hover) var(--easing-organic);
@@ -645,13 +647,13 @@ onUnmounted(() => {
 }
 
 .analysis-item:hover {
-  background: rgba(155, 127, 232, 0.12);
+  background: rgba(91, 155, 213, 0.12);
   transform: translateY(-2px);
 }
 
 .analysis-item.latest {
   border: 1.5px solid var(--color-primary-light);
-  background: rgba(155, 127, 232, 0.1);
+  background: rgba(91, 155, 213, 0.1);
 }
 
 .analysis-header {
@@ -668,21 +670,20 @@ onUnmounted(() => {
   color: var(--text-primary);
 }
 
+.analysis-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.latest-inline {
+  font-size: 10px;
+  padding: 2px 8px;
+}
+
 .analysis-time {
   font-size: 12px;
   color: var(--text-muted);
-}
-
-.latest-badge {
-  position: absolute;
-  top: 8px;
-  right: 10px;
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--color-primary);
-  background: rgba(155, 127, 232, 0.2);
-  padding: 2px 8px;
-  border-radius: 8px 4px 6px 4px;
 }
 
 .analysis-modal {
@@ -720,7 +721,7 @@ onUnmounted(() => {
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px;
-  border-bottom: 1px solid rgba(155, 127, 232, 0.1);
+  border-bottom: 1px solid rgba(91, 155, 213, 0.1);
 }
 
 .modal-header h3 {
@@ -735,7 +736,7 @@ onUnmounted(() => {
   width: 36px;
   height: 36px;
   border: none;
-  background: rgba(155, 127, 232, 0.1);
+  background: rgba(91, 155, 213, 0.1);
   border-radius: 12px 8px 10px 6px;
   display: flex;
   align-items: center;
@@ -746,7 +747,7 @@ onUnmounted(() => {
 }
 
 .close-btn:hover {
-  background: rgba(155, 127, 232, 0.2);
+  background: rgba(91, 155, 213, 0.2);
   color: var(--text-primary);
 }
 
@@ -775,7 +776,7 @@ onUnmounted(() => {
 
 .result-section {
   padding: 16px 18px;
-  background: rgba(155, 127, 232, 0.06);
+  background: rgba(91, 155, 213, 0.06);
   border-radius: 18px 12px 16px 10px;
 }
 
@@ -839,7 +840,7 @@ onUnmounted(() => {
   gap: 16px;
   margin-top: 24px;
   padding-top: 20px;
-  border-top: 1px solid rgba(155, 127, 232, 0.1);
+  border-top: 1px solid rgba(91, 155, 213, 0.1);
 }
 
 .analysis-meta span {

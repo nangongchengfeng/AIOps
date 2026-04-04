@@ -1,0 +1,121 @@
+@use './variables.scss' as *;
+
+// 全局重置
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  font-family: $font-sans;
+  background-color: $color-background;
+  color: $color-foreground;
+  line-height: 1.6;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: $font-display;
+  font-weight: 800;
+}
+
+code,
+pre,
+.font-mono {
+  font-family: $font-mono;
+}
+
+// 滚动条样式
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: $color-muted;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $color-muted-foreground;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: $color-accent;
+}
+
+// Element Plus 主题覆盖
+:root {
+  --el-color-primary: #{$color-accent};
+  --el-color-primary-light-3: #{$color-accent-secondary};
+  --el-color-primary-light-5: #80a8ff;
+  --el-color-primary-light-7: #b3d5ff;
+  --el-color-primary-light-9: #e6f0ff;
+  --el-color-primary-dark-2: #0042cc;
+  --el-border-color: #{$color-border};
+  --el-border-radius-base: 12px;
+  --el-fill-color-blank: #{$color-card};
+  --el-bg-color: #{$color-background};
+  --el-text-color-primary: #{$color-foreground};
+  --el-text-color-regular: #{$color-muted-foreground};
+}
+
+// 动画
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes morphBlob {
+  0%,
+  100% {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  }
+  50% {
+    border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulseSoft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-fade-slide-up {
+  animation: fadeSlideUp 0.6s ease-out both;
+}
+
+.animate-morph-blob {
+  animation: morphBlob 10s ease-in-out infinite alternate;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.animate-pulse-soft {
+  animation: pulseSoft 2s ease-in-out infinite;
+}

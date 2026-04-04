@@ -28,6 +28,7 @@ app/
 ├── utils/         # 工具函数
 ├── middleware/    # 中间件
 ├── tasks/         # 定时任务
+├── logs/          # 日志存放目录
 └── main.py        # 入口
 tests/             # 测试
 migrations/        # 数据库迁移

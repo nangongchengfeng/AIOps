@@ -17,40 +17,18 @@ withDefaults(defineProps<Props>(), {
 <style scoped>
 .org-card {
   background: var(--gradient-surface);
-  border-radius: var(--radius-organic-md);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   padding: 24px 28px;
-  border: 1px solid rgba(155, 127, 232, 0.1);
-  transition: transform var(--duration-hover) var(--easing-organic),
-    box-shadow var(--duration-hover) var(--easing-organic);
+  border: 1px solid rgba(91, 155, 213, 0.1);
+  transition: transform var(--duration-hover) var(--easing-smooth),
+    box-shadow var(--duration-hover) var(--easing-smooth);
   position: relative;
   overflow: hidden;
 }
 
-.org-card:nth-child(2n) {
-  border-radius: 28px 38px 22px 32px;
-}
-
-.org-card:nth-child(3n) {
-  border-radius: 36px 22px 38px 18px;
-}
-
-.org-card:not(.no-decoration)::before {
-  content: '';
-  position: absolute;
-  width: 180px;
-  height: 180px;
-  top: -60px;
-  right: -50px;
-  background: var(--gradient-primary);
-  opacity: 0.06;
-  border-radius: var(--radius-blob);
-  animation: morphBlob var(--duration-morph) ease-in-out infinite alternate;
-  pointer-events: none;
-}
-
 .org-card:hover {
-  transform: translateY(-3px) scale(1.008);
+  transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
 }
 

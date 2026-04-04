@@ -1,5 +1,10 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 import os
+from pathlib import Path
+
+
+# 获取项目根目录（backend 目录）
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 class Settings(BaseSettings):
@@ -25,9 +30,11 @@ class Settings(BaseSettings):
     analysis_timeout_seconds: int = 60
     auto_analyze_new_alerts: bool = True
 
-    class Config:
-        env_file = ".env"
-        case_sensitive = False
+    model_config = SettingsConfigDict(
+        env_file=str(BASE_DIR / ".env"),
+        env_file_encoding="utf-8",
+        case_sensitive=False,
+    )
 
 
 settings = Settings()

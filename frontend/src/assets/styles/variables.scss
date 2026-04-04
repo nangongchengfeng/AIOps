@@ -1,0 +1,26 @@
+// 设计系统变量
+$color-background: #fafafa;
+$color-foreground: #0f172a;
+$color-muted: #f1f5f9;
+$color-muted-foreground: #64748b;
+$color-accent: #0052ff;
+$color-accent-secondary: #4d7cff;
+$color-accent-foreground: #ffffff;
+$color-border: #e2e8f0;
+$color-card: #ffffff;
+$color-ring: #0052ff;
+
+// 渐变
+$gradient-accent: linear-gradient(to right, #0052ff, #4d7cff);
+
+// 阴影
+$shadow-accent: 0 4px 14px rgba(0, 82, 255, 0.25);
+$shadow-accent-lg: 0 8px 24px rgba(0, 82, 255, 0.35);
+
+// 字体（使用系统字体）
+$font-display: Georgia, 'Times New Roman', serif;
+$font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+$font-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
+
+// 过渡
+$transition-standard: all 0.2s ease-out;

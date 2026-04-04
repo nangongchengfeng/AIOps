@@ -1,62 +1,56 @@
 :root {
   /* 背景层 */
-  --bg-base: #f5f3f7;
-  --bg-surface: #faf8fc;
-  --bg-elevated: #ffffff;
+  --bg-base:        #f8fafc;
+  --bg-surface:     #ffffff;
+  --bg-elevated:    #ffffff;
 
-  /* 主色调 — 粉紫渐变系 */
-  --color-primary: #9b7fe8;
-  --color-primary-light: #c4aeef;
-  --color-primary-dark: #7158c1;
+  /* 主色调 — 清新蓝白 */
+  --color-primary:       #5b9bd5;
+  --color-primary-light: #8ecae6;
+  --color-primary-dark:  #2e77c2;
 
   /* 辅助色 */
-  --color-teal: #7ecec4;
-  --color-rose: #e8a4b8;
-  --color-sand: #d4c5a9;
-  --color-sky: #a8cfe0;
+  --color-teal:     #67c8c5;
+  --color-soft:     #a8d5e8;
 
-  /* 状态色（柔和版） */
-  --color-success: #8ecba8;
-  --color-warning: #e8cc8a;
-  --color-error: #e8968c;
-  --color-info: #8ab4e8;
+  /* 状态色（清新版） */
+  --color-success:  #51cf66;
+  --color-warning:  #f59f00;
+  --color-error:    #ff6b6b;
+  --color-info:     #5b9bd5;
 
   /* 文字 */
-  --text-primary: #2d2640;
-  --text-secondary: #6b5f80;
-  --text-muted: #a398b8;
+  --text-primary:   #1e293b;
+  --text-secondary: #64748b;
+  --text-muted:     #94a3b8;
 
   /* 渐变预设 */
-  --gradient-primary: linear-gradient(135deg, #9b7fe8 0%, #c4aeef 60%, #e8a4b8 100%);
-  --gradient-teal: linear-gradient(135deg, #7ecec4 0%, #a8cfe0 100%);
-  --gradient-warm: linear-gradient(135deg, #e8a4b8 0%, #e8cc8a 100%);
-  --gradient-surface: linear-gradient(160deg, #faf8fc 0%, #f0edf8 100%);
+  --gradient-primary: linear-gradient(135deg, #5b9bd5 0%, #8ecae6 100%);
+  --gradient-surface: linear-gradient(160deg, #ffffff 0%, #f8fafc 100%);
+  --gradient-sidebar: linear-gradient(180deg, rgba(91,155,213,0.15) 0%, rgba(142,202,230,0.18) 100%);
 
-  /* 阴影（柔和、带色调） */
-  --shadow-sm: 0 2px 12px rgba(155, 127, 232, 0.08);
-  --shadow-md: 0 6px 28px rgba(155, 127, 232, 0.13);
-  --shadow-lg: 0 16px 48px rgba(155, 127, 232, 0.18);
-  --shadow-blob: 0 20px 60px rgba(155, 127, 232, 0.22);
+  /* 阴影（清新蓝调） */
+  --shadow-sm:   0 2px 12px rgba(91, 155, 213, 0.08);
+  --shadow-md:   0 6px 24px rgba(91, 155, 213, 0.12);
+  --shadow-lg:   0 12px 40px rgba(91, 155, 213, 0.15);
 
-  /* 圆角预设 */
-  --radius-organic-sm: 18px 12px 16px 10px;
-  --radius-organic-md: 32px 18px 28px 22px;
-  --radius-organic-lg: 48px 28px 42px 32px;
-  --radius-pill: 50px 28px 44px 30px;
-  --radius-blob: 62% 38% 54% 46% / 48% 52% 48% 52%;
+  /* 圆角（统一规整） */
+  --radius-sm:  8px;
+  --radius-md:  12px;
+  --radius-lg:  16px;
+  --radius-xl:  20px;
+  --radius-pill: 50px;
 
   /* 动效时间 */
-  --duration-morph: 8s;
-  --duration-hover: 0.4s;
-  --duration-active: 0.2s;
-  --duration-enter: 0.6s;
-  --easing-organic: cubic-bezier(0.34, 0.8, 0.56, 1.02);
-  --easing-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-hover:    0.3s;
+  --duration-active:   0.15s;
+  --duration-enter:    0.4s;
+  --easing-smooth:     cubic-bezier(0.4, 0, 0.2, 1);
 
   /* 字体栈 */
   --font-display: 'Sora', 'PingFang SC', sans-serif;
-  --font-body: 'DM Sans', 'PingFang SC', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-body:    'DM Sans', 'PingFang SC', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
 
   /* 字号 */
   --text-xs: 11px;
@@ -66,9 +60,4 @@
   --text-xl: 22px;
   --text-2xl: 28px;
   --text-3xl: 36px;
-
-  /* 行高 */
-  --leading-tight: 1.25;
-  --leading-normal: 1.6;
-  --leading-loose: 1.9;
 }

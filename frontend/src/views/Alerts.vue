@@ -241,8 +241,8 @@ onUnmounted(() => {
 }
 
 .org-select {
-  background: rgba(155, 127, 232, 0.05);
-  border: 1.5px solid rgba(155, 127, 232, 0.18);
+  background: rgba(91, 155, 213, 0.05);
+  border: 1.5px solid rgba(91, 155, 213, 0.18);
   border-radius: 16px 10px 14px 8px;
   padding: 10px 16px;
   font-size: var(--text-sm);
@@ -255,8 +255,8 @@ onUnmounted(() => {
 
 .org-select:focus {
   border-color: var(--color-primary);
-  background: rgba(155, 127, 232, 0.08);
-  box-shadow: 0 0 0 3px rgba(155, 127, 232, 0.12);
+  background: rgba(91, 155, 213, 0.08);
+  box-shadow: 0 0 0 3px rgba(91, 155, 213, 0.12);
 }
 
 .table-card {
@@ -278,7 +278,7 @@ onUnmounted(() => {
 .spinner {
   width: 32px;
   height: 32px;
-  border: 3px solid rgba(155, 127, 232, 0.2);
+  border: 3px solid rgba(91, 155, 213, 0.2);
   border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
@@ -298,7 +298,7 @@ onUnmounted(() => {
 }
 
 .org-table thead tr {
-  background: linear-gradient(90deg, rgba(155, 127, 232, 0.08), rgba(126, 206, 196, 0.08));
+  background: linear-gradient(90deg, rgba(91, 155, 213, 0.08), rgba(142, 202, 230, 0.08));
 }
 
 .org-table thead th {
@@ -309,17 +309,17 @@ onUnmounted(() => {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-secondary);
-  border-bottom: 1px solid rgba(155, 127, 232, 0.1);
+  border-bottom: 1px solid rgba(91, 155, 213, 0.1);
   font-family: var(--font-display);
 }
 
 .table-row {
   transition: background var(--duration-hover) var(--easing-smooth);
-  border-bottom: 1px solid rgba(155, 127, 232, 0.06);
+  border-bottom: 1px solid rgba(91, 155, 213, 0.06);
 }
 
 .table-row:hover {
-  background: rgba(155, 127, 232, 0.04);
+  background: rgba(91, 155, 213, 0.04);
 }
 
 .org-table tbody td {
@@ -378,13 +378,13 @@ onUnmounted(() => {
   font-size: 12px;
   color: var(--color-primary);
   text-decoration: none;
-  background: rgba(155, 127, 232, 0.1);
+  background: rgba(91, 155, 213, 0.1);
   border-radius: 12px 6px 10px 8px;
   transition: all var(--duration-hover) var(--easing-organic);
 }
 
 .action-btn:hover {
-  background: rgba(155, 127, 232, 0.2);
+  background: rgba(91, 155, 213, 0.2);
   transform: translateY(-1px);
 }
 
@@ -394,14 +394,14 @@ onUnmounted(() => {
   justify-content: center;
   gap: 16px;
   padding: 16px 24px;
-  border-top: 1px solid rgba(155, 127, 232, 0.1);
+  border-top: 1px solid rgba(91, 155, 213, 0.1);
 }
 
 .page-btn {
   width: 36px;
   height: 36px;
   border: none;
-  background: rgba(155, 127, 232, 0.1);
+  background: rgba(91, 155, 213, 0.1);
   border-radius: 12px 8px 10px 6px;
   display: flex;
   align-items: center;
@@ -412,7 +412,7 @@ onUnmounted(() => {
 }
 
 .page-btn:hover:not(:disabled) {
-  background: rgba(155, 127, 232, 0.2);
+  background: rgba(91, 155, 213, 0.2);
   color: var(--color-primary);
 }
 

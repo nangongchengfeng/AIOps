@@ -10,7 +10,7 @@
     <div class="kpi-grid card-grid">
       <OrgCard class="kpi-card" :no-decoration="true">
         <div class="kpi-content">
-          <div class="kpi-icon" style="background: linear-gradient(135deg, #9b7fe8, #c4aeef);">
+          <div class="kpi-icon" style="background: linear-gradient(135deg, #5b9bd5, #8ecae6);">
             <AlertTriangle :size="28" />
           </div>
           <div class="kpi-main">
@@ -18,12 +18,11 @@
             <div class="kpi-label">总告警数</div>
           </div>
         </div>
-        <div class="kpi-decoration" aria-hidden="true" />
       </OrgCard>
 
       <OrgCard class="kpi-card" :no-decoration="true">
         <div class="kpi-content">
-          <div class="kpi-icon" style="background: linear-gradient(135deg, #e8968c, #e8a4b8);">
+          <div class="kpi-icon" style="background: linear-gradient(135deg, #f59f00, #ffc078);">
             <AlertCircle :size="28" />
           </div>
           <div class="kpi-main">
@@ -31,12 +30,11 @@
             <div class="kpi-label">活跃告警</div>
           </div>
         </div>
-        <div class="kpi-decoration" aria-hidden="true" />
       </OrgCard>
 
       <OrgCard class="kpi-card" :no-decoration="true">
         <div class="kpi-content">
-          <div class="kpi-icon" style="background: linear-gradient(135deg, #7ecec4, #a8cfe0);">
+          <div class="kpi-icon" style="background: linear-gradient(135deg, #67c8c5, #a8d5e8);">
             <Sparkles :size="28" />
           </div>
           <div class="kpi-main">
@@ -44,12 +42,11 @@
             <div class="kpi-label">AI 分析</div>
           </div>
         </div>
-        <div class="kpi-decoration" aria-hidden="true" />
       </OrgCard>
 
       <OrgCard class="kpi-card" :no-decoration="true">
         <div class="kpi-content">
-          <div class="kpi-icon" style="background: linear-gradient(135deg, #8ecba8, #b8e0c8);">
+          <div class="kpi-icon" style="background: linear-gradient(135deg, #51cf66, #8ce99a);">
             <CheckCircle :size="28" />
           </div>
           <div class="kpi-main">
@@ -57,7 +54,6 @@
             <div class="kpi-label">今日解决</div>
           </div>
         </div>
-        <div class="kpi-decoration" aria-hidden="true" />
       </OrgCard>
     </div>
 
@@ -129,12 +125,16 @@ const trendChartRef = ref<HTMLElement>()
 let trendChart: echarts.ECharts | null = null
 const isUnmounted = ref(false)
 
+// 趋势数据
+const trendData = ref<{ date: string; count: number }[]>([])
+
 const loadData = async () => {
   loading.value = true
   try {
-    const [alertsRes, analysesRes] = await Promise.all([
+    const [alertsRes, analysesRes, trendRes] = await Promise.all([
       alertsApi.getAlerts({ limit: 100 }),
-      alertsApi.getLatestAnalyses(5)
+      alertsApi.getLatestAnalyses(5),
+      alertsApi.getTrend()
     ])
 
     if (!isUnmounted.value) {
@@ -144,6 +144,12 @@ const loadData = async () => {
       stats.value.resolvedToday = alertsRes.items.filter(a => a.status === 'resolved').length
 
       latestAnalyses.value = analysesRes
+      trendData.value = trendRes.items
+
+      // 更新图表数据
+      nextTick(() => {
+        updateChart()
+      })
     }
   } catch (error) {
     if (!isUnmounted.value) {
@@ -162,80 +168,91 @@ const initChart = () => {
 
   try {
     trendChart = echarts.init(trendChartRef.value)
-
-    const option = {
-      tooltip: {
-        trigger: 'axis',
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-        borderColor: 'rgba(155, 127, 232, 0.2)',
-        borderWidth: 1,
-        textStyle: {
-          color: '#2d2640',
-          fontFamily: 'DM Sans'
-        }
-      },
-      grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        top: '10%',
-        containLabel: true
-      },
-      xAxis: {
-        type: 'category',
-        boundaryGap: false,
-        data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
-        axisLine: { lineStyle: { color: 'rgba(155, 127, 232, 0.2)' } },
-        axisLabel: { color: '#6b5f80', fontFamily: 'DM Sans' }
-      },
-      yAxis: {
-        type: 'value',
-        axisLine: { show: false },
-        splitLine: { lineStyle: { color: 'rgba(155, 127, 232, 0.1)' } },
-        axisLabel: { color: '#6b5f80', fontFamily: 'DM Sans' }
-      },
-      series: [
-        {
-          name: '告警数',
-          type: 'line',
-          smooth: true,
-          symbol: 'circle',
-          symbolSize: 8,
-          lineStyle: {
-            width: 3,
-            color: {
-              type: 'linear',
-              x: 0, y: 0, x2: 1, y2: 0,
-              colorStops: [
-                { offset: 0, color: '#9b7fe8' },
-                { offset: 1, color: '#e8a4b8' }
-              ]
-            }
-          },
-          itemStyle: {
-            color: '#9b7fe8',
-            borderColor: '#fff',
-            borderWidth: 2
-          },
-          areaStyle: {
-            color: {
-              type: 'linear',
-              x: 0, y: 0, x2: 0, y2: 1,
-              colorStops: [
-                { offset: 0, color: 'rgba(155, 127, 232, 0.3)' },
-                { offset: 1, color: 'rgba(155, 127, 232, 0.05)' }
-              ]
-            }
-          },
-          data: [12, 19, 15, 25, 22, 18, 14]
-        }
-      ]
-    }
-
-    trendChart.setOption(option)
+    updateChart()
   } catch (e) {
     console.error('Failed to init chart:', e)
   }
+}
+
+const updateChart = () => {
+  if (!trendChart) return
+
+  const dates = trendData.value.map(item => {
+    const d = new Date(item.date)
+    return `${d.getMonth() + 1}/${d.getDate()}`
+  })
+  const counts = trendData.value.map(item => item.count)
+
+  const option = {
+    tooltip: {
+      trigger: 'axis',
+      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+      borderColor: 'rgba(91, 155, 213, 0.2)',
+      borderWidth: 1,
+      textStyle: {
+        color: '#1e293b',
+        fontFamily: 'DM Sans'
+      }
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      top: '10%',
+      containLabel: true
+    },
+    xAxis: {
+      type: 'category',
+      boundaryGap: false,
+      data: dates.length > 0 ? dates : ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+      axisLine: { lineStyle: { color: 'rgba(91, 155, 213, 0.2)' } },
+      axisLabel: { color: '#64748b', fontFamily: 'DM Sans' }
+    },
+    yAxis: {
+      type: 'value',
+      axisLine: { show: false },
+      splitLine: { lineStyle: { color: 'rgba(91, 155, 213, 0.1)' } },
+      axisLabel: { color: '#64748b', fontFamily: 'DM Sans' }
+    },
+    series: [
+      {
+        name: '告警数',
+        type: 'line',
+        smooth: true,
+        symbol: 'circle',
+        symbolSize: 8,
+        lineStyle: {
+          width: 3,
+          color: {
+            type: 'linear',
+            x: 0, y: 0, x2: 1, y2: 0,
+            colorStops: [
+              { offset: 0, color: '#5b9bd5' },
+              { offset: 1, color: '#8ecae6' }
+            ]
+          }
+        },
+        itemStyle: {
+          color: '#5b9bd5',
+          borderColor: '#fff',
+          borderWidth: 2
+        },
+        areaStyle: {
+          color: {
+            type: 'linear',
+            x: 0, y: 0, x2: 0, y2: 1,
+            colorStops: [
+              { offset: 0, color: 'rgba(91, 155, 213, 0.25)' },
+              { offset: 1, color: 'rgba(91, 155, 213, 0.05)' }
+            ]
+          }
+        },
+        data: counts.length > 0 ? counts : [0, 0, 0, 0, 0, 0, 0]
+      }
+    ]
+  }
+
+  trendChart.setOption(option)
 }
 
 const formatTime = (time: string) => {
@@ -273,7 +290,7 @@ const handleResize = () => {
 onMounted(() => {
   loadData()
   nextTick(() => {
-    setTimeout(initChart, 200)
+    initChart()
   })
   window.addEventListener('resize', handleResize)
 })
@@ -365,18 +382,6 @@ onUnmounted(() => {
   margin-top: 2px;
 }
 
-.kpi-decoration {
-  position: absolute;
-  width: 140px;
-  height: 140px;
-  bottom: -50px;
-  right: -40px;
-  background: var(--gradient-primary);
-  opacity: 0.08;
-  border-radius: var(--radius-blob);
-  animation: morphBlob 10s ease-in-out infinite alternate;
-}
-
 .content-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -438,7 +443,7 @@ onUnmounted(() => {
 .spinner {
   width: 24px;
   height: 24px;
-  border: 3px solid rgba(155, 127, 232, 0.2);
+  border: 3px solid rgba(91, 155, 213, 0.2);
   border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
@@ -455,7 +460,7 @@ onUnmounted(() => {
   padding: 14px 0;
   text-decoration: none;
   transition: background var(--duration-hover) var(--easing-smooth);
-  border-bottom: 1px solid rgba(155, 127, 232, 0.06);
+  border-bottom: 1px solid rgba(91, 155, 213, 0.08);
 }
 
 .analysis-item:last-child {
@@ -463,7 +468,7 @@ onUnmounted(() => {
 }
 
 .analysis-item:hover {
-  background: rgba(155, 127, 232, 0.04);
+  background: rgba(91, 155, 213, 0.05);
   margin: 0 -12px;
   padding: 14px 12px;
   border-radius: 12px;

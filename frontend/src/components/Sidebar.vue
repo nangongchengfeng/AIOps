@@ -21,8 +21,6 @@
         </RouterLink>
       </nav>
     </div>
-
-    <div class="sidebar-decoration" aria-hidden="true" />
   </aside>
 </template>
 
@@ -46,13 +44,16 @@ const isActive = (path: string) => {
 <style scoped>
 .sidebar {
   width: 240px;
-  background: linear-gradient(180deg, #2d2640 0%, #1e1a30 100%);
+  background: rgba(91, 155, 213, 0.12);
   padding: 24px 0;
   position: relative;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  border-radius: 0 32px 24px 0;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(91, 155, 213, 0.15);
+  border-radius: 0 24px 20px 0;
 }
 
 .sidebar-content {
@@ -61,18 +62,6 @@ const isActive = (path: string) => {
   display: flex;
   flex-direction: column;
   height: 100%;
-}
-
-.sidebar-decoration {
-  position: absolute;
-  bottom: -80px;
-  left: -40px;
-  width: 280px;
-  height: 280px;
-  background: var(--gradient-primary);
-  opacity: 0.12;
-  border-radius: var(--radius-blob);
-  animation: morphBlob calc(var(--duration-morph) * 1.3) ease-in-out infinite alternate;
 }
 
 .logo {
@@ -97,7 +86,7 @@ const isActive = (path: string) => {
   font-family: var(--font-display);
   font-size: 22px;
   font-weight: 800;
-  color: white;
+  color: var(--text-primary);
   letter-spacing: -0.02em;
 }
 
@@ -113,23 +102,23 @@ const isActive = (path: string) => {
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-secondary);
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
-  border-radius: 0 var(--radius-organic-sm);
-  transition: all var(--duration-hover) var(--easing-organic);
+  border-radius: var(--radius-md);
+  transition: all var(--duration-hover) var(--easing-smooth);
   position: relative;
 }
 
 .nav-item:hover {
-  color: white;
-  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  background: rgba(91, 155, 213, 0.08);
 }
 
 .nav-item.active {
-  color: white;
-  background: linear-gradient(90deg, rgba(155,127,232,0.25), transparent);
-  border-left: 3px solid var(--color-primary-light);
+  color: var(--color-primary);
+  background: linear-gradient(90deg, rgba(91, 155, 213, 0.15), rgba(91, 155, 213, 0.05));
+  border-left: 3px solid var(--color-primary);
 }
 </style>
