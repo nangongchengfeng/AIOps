@@ -1,12 +1,17 @@
+"""
+告警分析器模块
+
+负责调用 LLM 进行告警根因分析，支持异步后台执行。
+"""
 import logging
 from datetime import datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
-from app.db.crud import AlertCRUD, AnalysisCRUD
+from app.repository import AlertRepository, AnalysisRepository
 from app.db.models import Analysis
-from app.models.schemas import AnalysisCreate, AnalysisUpdate, AnalysisResult
+from app.schemas import AnalysisCreate, AnalysisUpdate, AnalysisResult
 from app.services.prometheus_client import prometheus_client
 from app.services.llm_service import llm_service
 
@@ -14,18 +19,41 @@ logger = logging.getLogger(__name__)
 
 
 class AlertAnalyzer:
+    """
+    告警分析器
+
+    负责创建分析记录、调用 LLM 进行根因分析、保存分析结果。
+    """
+
     def __init__(self, db: AsyncSession):
+        """
+        初始化告警分析器
+
+        Args:
+            db: 数据库会话
+        """
         self.db = db
-        self.alert_crud = AlertCRUD()
-        self.analysis_crud = AnalysisCRUD()
+        self.alert_repository = AlertRepository()
+        self.analysis_repository = AnalysisRepository()
 
     async def create_pending_analysis(self, alert_id: int) -> Analysis:
-        """创建 pending 状态的分析记录，立即返回"""
-        alert = await self.alert_crud.get_by_id(self.db, alert_id)
+        """
+        创建 pending 状态的分析记录，立即返回
+
+        Args:
+            alert_id: 告警 ID
+
+        Returns:
+            pending 状态的分析记录
+
+        Raises:
+            ValueError: 当告警不存在时
+        """
+        alert = await self.alert_repository.get_by_id(self.db, alert_id)
         if not alert:
             raise ValueError(f"Alert {alert_id} not found")
 
-        existing_analyses = await self.analysis_crud.get_by_alert_id(
+        existing_analyses = await self.analysis_repository.get_by_alert_id(
             self.db,
             alert_id,
             only_latest=True,
@@ -41,20 +69,24 @@ class AlertAnalyzer:
             status="pending",
             started_at=datetime.now(),
         )
-        analysis = await self.analysis_crud.create(self.db, analysis_in)
+        analysis = await self.analysis_repository.create(self.db, analysis_in)
         logger.info(f"Created pending analysis {analysis.id} for alert {alert_id}")
         return analysis
 
     async def process_analysis_background(self, analysis_id: int):
-        """后台执行实际的分析逻辑"""
+        """
+        后台执行实际的分析逻辑
+
+        Args:
+            analysis_id: 分析记录 ID
+        """
         try:
-            # 重新获取 db session，因为后台任务可能在不同的上下文中
-            analysis = await self.analysis_crud.get_by_id(self.db, analysis_id)
+            analysis = await self.analysis_repository.get_by_id(self.db, analysis_id)
             if not analysis:
                 logger.error(f"Analysis {analysis_id} not found")
                 return
 
-            alert = await self.alert_crud.get_by_id(self.db, analysis.alert_id)
+            alert = await self.alert_repository.get_by_id(self.db, analysis.alert_id)
             if not alert:
                 logger.error(f"Alert {analysis.alert_id} not found")
                 return
@@ -69,7 +101,7 @@ class AlertAnalyzer:
                     model_used="disabled",
                     completed_at=datetime.now(),
                 )
-                await self.analysis_crud.update(self.db, analysis, update_in)
+                await self.analysis_repository.update(self.db, analysis, update_in)
                 return
 
             alert_data = {
@@ -103,30 +135,41 @@ class AlertAnalyzer:
                 status="completed",
                 completed_at=datetime.now(),
             )
-            await self.analysis_crud.update(self.db, analysis, update_in)
+            await self.analysis_repository.update(self.db, analysis, update_in)
             logger.info(f"Completed analysis {analysis_id} for alert {analysis.alert_id}")
 
         except Exception as e:
             logger.error(f"Background analysis failed for analysis {analysis_id}: {e}")
             try:
-                analysis = await self.analysis_crud.get_by_id(self.db, analysis_id)
+                analysis = await self.analysis_repository.get_by_id(self.db, analysis_id)
                 if analysis:
                     update_in = AnalysisUpdate(
                         status="failed",
                         error_message=str(e),
                         completed_at=datetime.now(),
                     )
-                    await self.analysis_crud.update(self.db, analysis, update_in)
+                    await self.analysis_repository.update(self.db, analysis, update_in)
             except Exception as update_error:
                 logger.error(f"Failed to update failed analysis: {update_error}")
 
     async def analyze_alert(self, alert_id: int) -> Analysis:
-        """同步分析（保留向后兼容）"""
-        alert = await self.alert_crud.get_by_id(self.db, alert_id)
+        """
+        同步分析（保留向后兼容）
+
+        Args:
+            alert_id: 告警 ID
+
+        Returns:
+            分析记录
+
+        Raises:
+            ValueError: 当告警不存在时
+        """
+        alert = await self.alert_repository.get_by_id(self.db, alert_id)
         if not alert:
             raise ValueError(f"Alert {alert_id} not found")
 
-        existing_analyses = await self.analysis_crud.get_by_alert_id(
+        existing_analyses = await self.analysis_repository.get_by_alert_id(
             self.db,
             alert_id,
             only_latest=True,
@@ -142,7 +185,7 @@ class AlertAnalyzer:
             status="pending",
             started_at=datetime.now(),
         )
-        analysis = await self.analysis_crud.create(self.db, analysis_in)
+        analysis = await self.analysis_repository.create(self.db, analysis_in)
         logger.info(f"Created analysis {analysis.id} for alert {alert_id}")
 
         if not settings.analysis_enabled:
@@ -155,7 +198,7 @@ class AlertAnalyzer:
                 model_used="disabled",
                 completed_at=datetime.now(),
             )
-            return await self.analysis_crud.update(self.db, analysis, update_in)
+            return await self.analysis_repository.update(self.db, analysis, update_in)
 
         try:
             alert_data = {
@@ -189,7 +232,7 @@ class AlertAnalyzer:
                 status="completed",
                 completed_at=datetime.now(),
             )
-            analysis = await self.analysis_crud.update(self.db, analysis, update_in)
+            analysis = await self.analysis_repository.update(self.db, analysis, update_in)
             logger.info(f"Completed analysis {analysis.id} for alert {alert_id}")
 
         except Exception as e:
@@ -199,10 +242,19 @@ class AlertAnalyzer:
                 error_message=str(e),
                 completed_at=datetime.now(),
             )
-            analysis = await self.analysis_crud.update(self.db, analysis, update_in)
+            analysis = await self.analysis_repository.update(self.db, analysis, update_in)
 
         return analysis
 
 
 def get_alert_analyzer(db: AsyncSession) -> AlertAnalyzer:
+    """
+    获取告警分析器实例
+
+    Args:
+        db: 数据库会话
+
+    Returns:
+        告警分析器实例
+    """
     return AlertAnalyzer(db)

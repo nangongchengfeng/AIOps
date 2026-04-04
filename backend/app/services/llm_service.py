@@ -1,17 +1,21 @@
+"""
+LLM 服务模块
+
+封装与大语言模型的交互，用于告警根因分析。
+"""
 import json
 import logging
 from typing import Dict, Any, Optional
-from datetime import datetime
-import asyncio
 
 from openai import AsyncOpenAI
 
 from app.core.config import settings
-from app.models.schemas import AnalysisResult
+from app.schemas import AnalysisResult
 
 logger = logging.getLogger(__name__)
 
 
+# 根因分析提示词模板
 PROMPT_TEMPLATE = """你是一个经验丰富的 SRE 专家。请分析以下告警并给出根因分析和解决方案建议。
 
 【告警信息】
@@ -44,19 +48,30 @@ PROMPT_TEMPLATE = """你是一个经验丰富的 SRE 专家。请分析以下告
 
 
 class LLMService:
+    """
+    LLM 服务类
+
+    封装与大语言模型的交互，提供根因分析功能。
+    """
+
     def __init__(self):
+        """初始化 LLM 服务"""
         self._client: Optional[AsyncOpenAI] = None
 
     @property
     def client(self) -> AsyncOpenAI:
+        """
+        获取 AsyncOpenAI 客户端（懒加载）
+
+        Returns:
+            AsyncOpenAI 客户端实例
+        """
         if self._client is None:
             logger.info("=" * 60)
             logger.info("Initializing Async OpenAI client...")
             logger.info(f"  Model: {settings.openai_model}")
             logger.info(f"  Base URL: {settings.openai_base_url}")
             logger.info(f"  API Key: {'set' if settings.openai_api_key else 'not set'}")
-            if settings.openai_api_key:
-                logger.info(f"  API Key starts with: {settings.openai_api_key[:20]}...")
             logger.info("=" * 60)
 
             self._client = AsyncOpenAI(
@@ -66,6 +81,15 @@ class LLMService:
         return self._client
 
     def _format_metrics_summary(self, metrics_data: Dict[str, Any]) -> str:
+        """
+        格式化指标数据摘要
+
+        Args:
+            metrics_data: 指标数据
+
+        Returns:
+            格式化后的指标摘要字符串
+        """
         if not metrics_data or not metrics_data.get("metrics"):
             return "暂无相关指标数据"
 
@@ -87,6 +111,19 @@ class LLMService:
         alert_data: Dict[str, Any],
         metrics_data: Dict[str, Any],
     ) -> AnalysisResult:
+        """
+        分析告警根因
+
+        Args:
+            alert_data: 告警数据
+            metrics_data: 指标数据
+
+        Returns:
+            分析结果
+
+        Raises:
+            Exception: 当 LLM 调用失败时
+        """
         metrics_summary = self._format_metrics_summary(metrics_data)
 
         prompt = PROMPT_TEMPLATE.format(
@@ -102,8 +139,6 @@ class LLMService:
         logger.info(f"Invoking LLM for alert: {alert_data.get('alert_name')}")
 
         try:
-            logger.info(f"Sending request to: {settings.openai_base_url}/chat/completions")
-
             response = await self.client.chat.completions.create(
                 model=settings.openai_model,
                 messages=[
@@ -119,6 +154,7 @@ class LLMService:
 
             content = content.strip()
 
+            # 清理 JSON 格式
             if content.startswith("```json"):
                 content = content[7:]
             if content.startswith("```"):
@@ -148,4 +184,5 @@ class LLMService:
             raise
 
 
+# 全局 LLM 服务实例
 llm_service = LLMService()
